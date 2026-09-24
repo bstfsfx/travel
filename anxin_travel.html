@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安心接送 | 機場·高鐵·跨城專車</title>
+    <style>
+        /* ===== Reset & Base ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+            color: #1E293B;
+            background: #FFFFFF;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* ===== Color Variables ===== */
+        :root {
+            --navy: #0B2A4A;
+            --navy-light: #0F3D64;
+            --blue: #1677FF;
+            --blue-light: #F0F7FF;
+            --green: #06C755;
+            --amber: #EAA32B;
+            --amber-light: #F59E0B;
+            --bg-light: #F8FAFC;
+            --footer-dark: #0D1B2A;
+            --text-body: #475569;
+            --text-muted: #94A3B8;
+            --border-light: #E2E8F0;
+        }
+
+        /* ===== Header ===== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E2E8F0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 68px;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: var(--navy);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 20px;
+        }
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-text .brand { font-size: 18px; font-weight: 700; color: var(--navy); }
+        .logo-text .sub { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; }
+
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a { font-size: 15px; color: #475569; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--blue); }
+
+        .header-cta { display: flex; gap: 10px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 9px 20px; border-radius: 9999px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            border: none; transition: opacity 0.2s, transform 0.15s;
+        }
+        .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-green { background: var(--green); color: #fff; }
+        .btn-navy { background: var(--navy); color: #fff; }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-amber { background: var(--amber); color: #fff; }
+        .btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+        .btn-white { background: #fff; color: var(--navy); }
+
+        /* ===== Hero ===== */
+        .hero {
+            position: relative;
+            min-height: 600px;
+            background: linear-gradient(100deg, #d8ebf8 0%, #edf5fa 42%, rgba(237,245,250,0.3) 55%, transparent 65%), #d8ebf8;
+            display: flex; align-items: center;
+            padding-bottom: 130px;
+            overflow: visible;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0;
+            width: 50%;
+            background: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80') center / cover no-repeat;
+            z-index: 1;
+            clip-path: polygon(8% 0, 100% 0, 100% 100%, 0 100%);
+        }
+        .hero-content { position: relative; z-index: 2; width: 100%; }
+        .hero-text { max-width: 560px; }
+        .hero h1 {
+            font-size: 40px; line-height: 1.3; color: #0f2e59; font-weight: 800;
+            margin-bottom: 18px;
+        }
+        .hero p { font-size: 16px; color: #5a6b82; line-height: 1.8; }
+
+        .booking-widget {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -50px;
+            width: calc(100% - 48px);
+            max-width: 1100px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 18px;
+            box-shadow: 0 10px 40px rgba(15,46,89,0.14);
+            display: flex;
+            align-items: center;
+            gap: 0;
+            z-index: 10;
+        }
+        .widget-field {
+            flex: 1;
+            display: flex; flex-direction: column; gap: 4px;
+            padding: 6px 16px;
+            border-right: 1px solid var(--border-light);
+        }
+        .widget-field:last-of-type { border-right: none; }
+        .widget-field label { font-size: 13px; color: #5a6b82; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .widget-field .select-box {
+            border: none;
+            padding: 4px 0;
+            font-size: 14px; color: var(--text-muted);
+            background: transparent;
+            display: flex; align-items: center; gap: 6px;
+            cursor: pointer;
+            position: relative;
+            justify-content: space-between;
+        }
+        .widget-field .select-box .field-text { flex: 1; }
+        .widget-field .select-box .caret {
+            font-size: 11px; color: var(--text-muted);
+            flex-shrink: 0;
+        }
+        .booking-widget .btn {
+            margin-left: 12px;
+            border-radius: 8px;
+            padding: 12px 24px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: 180px;
+        }
+
+        .sub-service-bar {
+            position: relative; z-index: 2;
+            display: flex; justify-content: center; align-items: center;
+            gap: 14px;
+            margin-top: 30px;
+        }
+        .sub-service-bar .pill {
+            background: rgba(255,255,255,0.7);
+            border-radius: 9999px;
+            padding: 7px 20px;
+            font-size: 14px; font-weight: 600; color: #1e3a5f;
+            backdrop-filter: blur(4px);
+        }
+        .sub-service-bar .arrow { color: #1e3a5f; font-size: 16px; align-self: center; }
+
+        /* ===== Pain Points Section ===== */
+        .section { padding: 72px 0; }
+        .section:first-of-type { padding-top: 110px; }
+        .section-header { text-align: center; margin-bottom: 48px; }
+        .section-header .subtitle { font-size: 15px; color: var(--blue); font-weight: 600; margin-bottom: 8px; }
+        .section-header h2 { font-size: 30px; font-weight: 800; color: var(--navy); }
+
+        .pain-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+        .pain-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: box-shadow 0.25s, transform 0.15s;
+        }
+        .pain-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.1); transform: translateY(-3px); }
+        .pain-card .card-img { width: 100%; height: 140px; object-fit: cover; }
+        .pain-card .card-body { padding: 18px 16px; }
+        .pain-card .card-icon {
+            width: 36px; height: 36px;
+            background: var(--blue-light); color: var(--blue);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; margin-bottom: 10px; margin-top: -30px;
+            position: relative; z-index: 2;
+            border: 3px solid #fff;
+        }
+        .pain-card h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.4; }
+        .pain-card p { font-size: 13px; color: var(--text-body); line-height: 1.6; }
+
+        /* ===== Value & Process Flow ===== */
+        .process-section {
+            background: linear-gradient(135deg, #E8F0FE 0%, #F0F7FF 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .process-section::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 0; bottom: 0; width: 45%;
+            background: url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1200&q=80') center/cover no-repeat;
+            opacity: 0.18;
+        }
+        .process-content { position: relative; z-index: 2; }
+        .process-top { max-width: 640px; margin-bottom: 40px; }
+        .process-top .pill-tag {
+            display: inline-block;
+            background: var(--blue); color: #fff;
+            padding: 5px 16px; border-radius: 9999px;
+            font-size: 13px; font-weight: 600; margin-bottom: 14px;
+        }
+        .process-top h2 { font-size: 28px; font-weight: 800; color: var(--navy); margin-bottom: 14px; line-height: 1.4; }
+        .process-top p { font-size: 15px; color: var(--text-body); line-height: 1.8; }
+
+        .flow-steps { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; }
+        .flow-step {
+            flex: 1; min-width: 200px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 24px 20px;
+            margin: 0 6px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            position: relative;
+        }
+        .flow-step .step-icon {
+            width: 44px; height: 44px;
+            background: var(--blue-light); color: var(--blue);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; margin-bottom: 14px;
+        }
+        .flow-step h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+        .flow-step p { font-size: 13px; color: var(--text-body); line-height: 1.6; }
+        .flow-arrow {
+            display: flex; align-items: center;
+            color: var(--blue); font-size: 24px; font-weight: 700;
+            padding: 0 4px;
+        }
+        .flow-cta {
+            background: var(--amber); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; font-weight: 700; font-size: 16px;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .flow-cta:hover { opacity: 0.9; }
+
+        /* ===== Service Categories ===== */
+        .service-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
+        .service-card {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: box-shadow 0.25s, transform  0.15s;
+        }
+        .service-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.1); transform: translateY(-3px); }
+        .service-card img { width: 100%; height: 130px; object-fit: cover; }
+        .service-card .card-body { padding: 16px; }
+        .service-card h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+        .service-card .route { font-size: 13px; color: var(--text-body); margin-bottom: 10px; line-height: 1.5; }
+        .service-card .tag {
+            display: inline-block;
+            background: var(--blue-light); color: var(--blue);
+            font-size: 11px; font-weight: 600;
+            padding: 4px 10px; border-radius: 6px;
+        }
+
+        .disclaimer {
+            margin-top: 36px;
+            background: #FFF8E1;
+            border: 1px solid #FDE68A;
+            border-radius: 12px;
+            padding: 18px 24px;
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+        .disclaimer .warn-icon { font-size: 22px; flex-shrink: 0; }
+        .disclaimer .warn-title { font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+        .disclaimer p { font-size: 14px; color: var(--text-body); }
+
+        /* ===== Proof Section ===== */
+        .proof-section { background: var(--bg-light); }
+        .proof-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .proof-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .proof-card h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+        .stars { color: var(--amber); font-size: 18px; margin-bottom: 12px; letter-spacing: 2px; }
+        .review-quote { font-size: 14px; color: var(--text-body); line-height: 1.7; margin-bottom: 14px; font-style: italic; }
+        .reviewer { display: flex; align-items: center; gap: 10px; }
+        .reviewer .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--blue-light); display: flex;
+            align-items: center; justify-content: center;
+            color: var(--blue); font-weight: 700; font-size: 14px;
+        }
+        .reviewer .name { font-size: 13px; font-weight: 600; }
+        .reviewer .location { font-size: 12px; color: var(--text-muted); }
+        .carousel-dots { display: flex; gap: 6px; margin-top: 10px; }
+        .carousel-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-light); }
+        .carousel-dots .dot.active { background: var(--blue); }
+
+        .vehicle-photos { display: flex; flex-direction: column; gap: 10px; }
+        .vehicle-photos .main-photo { width: 100%; height: 140px; border-radius: 10px; object-fit: cover; }
+        .vehicle-photos .thumbs { display: flex; gap: 8px; }
+        .vehicle-photos .thumbs img { width: 50%; height: 70px; border-radius: 8px; object-fit: cover; }
+        .vehicle-photos .caption { font-size: 12px; color: var(--text-muted); text-align: center; }
+
+        .case-study .case-img { width: 100%; height: 120px; border-radius: 10px; object-fit: cover; margin-bottom: 14px; }
+        .case-study .case-route { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+        .case-study .case-detail { font-size: 13px; color: var(--text-body); }
+
+        .service-steps { list-style: none; }
+        .service-steps li {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--border-light);
+            font-size: 14px; font-weight: 600; color: var(--navy);
+        }
+        .service-steps li:last-child { border-bottom: none; }
+        .service-steps .num {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--blue); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+        }
+        .service-steps .arrow-icon { color: var(--text-muted); font-size: 14px; }
+
+        /* ===== FAQ Section ===== */
+        .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+        .faq-left h2 { font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+        .faq-left .faq-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+        .faq-item {
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .faq-item summary {
+            padding: 16px 20px;
+            font-size: 15px; font-weight: 600; color: var(--navy);
+            cursor: pointer; list-style: none;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: background 0.2s;
+        }
+        .faq-item summary:hover { background: var(--bg-light); }
+        .faq-item summary::after { content: '+'; font-size: 20px; color: var(--blue); transition: transform 0.2s; }
+        .faq-item[open] summary::after { transform: rotate(45deg); }
+        .faq-item .faq-answer { padding: 0 20px 18px; font-size: 14px; color: var(--text-body); line-height: 1.7; }
+
+        .faq-right { position: relative; }
+        .faq-right img { width: 100%; border-radius: 16px; }
+        .speech-bubble {
+            position: absolute;
+            bottom: -16px; left: 20px;
+            background: var(--navy); color: #fff;
+            padding: 12px 20px; border-radius: 14px;
+            font-size: 14px; font-weight: 600;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        .speech-bubble::before {
+            content: ''; position: absolute;
+            top: -8px; left: 24px;
+            border: 8px solid transparent;
+            border-bottom-color: var(--navy);
+        }
+
+        /* ===== CTA Banner ===== */
+        .cta-banner {
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1470004914212-05527e49370b?w=1920&q=80') center/cover no-repeat;
+            padding: 80px 0;
+            overflow: hidden;
+        }
+        .cta-banner::after {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(11,42,74,0.78);
+        }
+        .cta-content { position: relative; z-index: 2; max-width: 640px; }
+        .cta-content .pill-tag {
+            display: inline-block;
+            background: var(--blue); color: #fff;
+            padding: 5px 16px; border-radius: 9999px;
+            font-size: 13px; font-weight: 600; margin-bottom: 14px;
+        }
+        .cta-content h2 { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 14px; }
+        .cta-content p { font-size: 15px; color: rgba(255,255,255,0.9); line-height: 1.8; margin-bottom: 28px; }
+        .cta-buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+        .floating-badge {
+            position: absolute;
+            top: 30px; right: 60px;
+            background: var(--amber);
+            color: #fff;
+            padding: 16px 22px;
+            border-radius: 12px;
+            font-size: 14px; font-weight: 700;
+            transform: rotate(-6deg);
+            z-index: 3;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            max-width: 220px;
+            line-height: 1.5;
+        }
+
+        /* ===== Footer ===== */
+        footer { background: var(--footer-dark); color: #fff; }
+        .footer-top {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 36px 0; flex-wrap: wrap; gap: 20px;
+        }
+        .footer-logo { display: flex; align-items: center; gap: 10px; }
+        .footer-logo .logo-icon { background: #fff; color: var(--navy); }
+        .footer-logo .brand { color: #fff; }
+        .footer-logo .sub { color: rgba(255,255,255,0.6); }
+        .footer-links { display: flex; gap: 28px; list-style: none; }
+        .footer-links a { font-size: 14px; color: rgba(255,255,255,0.8); transition: color 0.2s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-cta { display: flex; gap: 10px; }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 0;
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 16px;
+        }
+        .footer-social { display: flex; gap: 12px; }
+        .footer-social a {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: #fff;
+            transition: background 0.2s;
+        }
+        .footer-social a:hover { background: var(--blue); }
+        .footer-copy { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .pain-cards, .service-cards { grid-template-columns: repeat(3, 1fr); }
+            .proof-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-links { display: none; }
+            .booking-widget { flex-wrap: wrap; gap: 8px; }
+            .widget-field { flex: 1 1 30%; border-right: none; border-bottom: 1px solid var(--border-light); padding-bottom: 8px; }
+            .booking-widget .btn { width: 100%; margin-left: 0; margin-top: 4px; }
+        }
+        @media (max-width: 768px) {
+            .pain-cards, .service-cards { grid-template-columns: repeat(2, 1fr); }
+            .proof-grid { grid-template-columns: 1fr; }
+            .faq-grid { grid-template-columns: 1fr; }
+            .booking-widget .btn { width: 100%; }
+            .hero h1 { font-size: 28px; }
+            .section-header h2 { font-size: 24px; }
+            .flow-steps { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); padding: 8px 0; }
+            .floating-badge { display: none; }
+            .footer-top { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .pain-cards, .service-cards { grid-template-columns: 1fr; }
+            .booking-widget { flex-direction: column; }
+            .widget-field { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); }
+            .header-cta .btn { padding: 7px 14px; font-size: 13px; }
+            .logo-text .sub { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+    <div class="container header-inner">
+        <div class="logo">
+            <div class="logo-icon">🚗</div>
+            <div class="logo-text">
+                <span class="brand">安心接送</span>
+                <span class="sub">機場 · 高鐵 · 跨城專車</span>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">首頁</a></li>
+            <li><a href="#">服務介紹</a></li>
+            <li><a href="#">車型介紹</a></li>
+            <li><a href="#">常見問題</a></li>
+            <li><a href="#">聯絡我們</a></li>
+        </ul>
+        <div class="header-cta">
+            <button class="btn btn-green">💬 LINE 諮詢</button>
+            <button class="btn btn-navy">立即預約</button>
+        </div>
+    </div>
+</header>
+
+<!-- ===== Hero Section ===== -->
+<section class="hero">
+    <div class="container hero-content">
+        <div class="hero-text">
+            <h1>抵達台灣的第一段旅程，<br>提前幫你安排好</h1>
+            <p>從桃園機場、高鐵站、飯店到台灣各城市，<br>專業接送，讓你不用拖著行李找車，<br>輕鬆出發，安心抵達。</p>
+        </div>
+        <div class="sub-service-bar">
+            <span class="pill">✈ 機場接送</span>
+            <span class="arrow">➔</span>
+            <span class="pill">🚄 高鐵接送</span>
+            <span class="arrow">➔</span>
+            <span class="pill">🏢 飯店接送</span>
+        </div>
+    </div>
+    <!-- Floating Booking Widget -->
+    <div class="booking-widget">
+        <div class="widget-field">
+            <label>📍 出發地</label>
+            <div class="select-box"><span class="field-text">請選擇出發地</span><span class="caret">▼</span></div>
+        </div>
+        <div class="widget-field">
+            <label>📍 目的地</label>
+            <div class="select-box"><span class="field-text">請選擇目的地</span><span class="caret">▼</span></div>
+        </div>
+        <div class="widget-field">
+            <label>⏱ 日期</label>
+            <div class="select-box"><span class="field-text">請選擇日期</span><span class="caret">▼</span></div>
+        </div>
+        <div class="widget-field">
+            <label>👤 人數</label>
+            <div class="select-box"><span class="field-text">請選擇人數</span><span class="caret">▼</span></div>
+        </div>
+        <div class="widget-field">
+            <label>🧳 行李</label>
+            <div class="select-box"><span class="field-text">請選擇行李數</span><span class="caret">▼</span></div>
+        </div>
+        <button class="btn btn-navy">立即取得接送報價</button>
+    </div>
+</section>
+
+<!-- ===== Pain Points Section ===== -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <p class="subtitle">你是不是也遇過這些情況？</p>
+            <h2>第一次來台灣，交通不用自己摸索</h2>
+        </div>
+        <div class="pain-cards">
+            <div class="pain-card">
+                <img class="card-img" src="https://images.unsplash.com/photo-1509515837298-2c67a3933321?w=400&q=80" alt="機場迷路">
+                <div class="card-body">
+                    <div class="card-icon">✈️</div>
+                    <h3>下飛機才開始想<br>怎麼去飯店</h3>
+                    <p>拖著行李、帶著家人，還要研究捷運、公車或轉乘方式。</p>
+                </div>
+            </div>
+            <div class="pain-card">
+                <img class="card-img" src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&q=80" alt="行李太多">
+                <div class="card-body">
+                    <div class="card-icon">🧳</div>
+                    <h3>行李太多，<br>搭大眾交通很麻煩</h3>
+                    <p>一家人出遊，光是行李就已經夠讓人頭痛。</p>
+                </div>
+            </div>
+            <div class="pain-card">
+                <img class="card-img" src="https://images.unsplash.com/photo-1519500099198-fd81846b8f03?w=400&q=80" alt="深夜抵達">
+                <div class="card-body">
+                    <div class="card-icon">🌙</div>
+                    <h3>凌晨或深夜抵達</h3>
+                    <p>不知道去哪裡找車，擔心現場叫不到合適的車。</p>
+                </div>
+            </div>
+            <div class="pain-card">
+                <img class="card-img" src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&q=80" alt="找不到司機">
+                <div class="card-body">
+                    <div class="card-icon">🧑‍✈️</div>
+                    <h3>最怕預約了<br>卻找不到司機</h3>
+                    <p>到了現場不知道在哪裡碰面，聯絡方式又不清楚。</p>
+                </div>
+            </div>
+            <div class="pain-card">
+                <img class="card-img" src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&q=80" alt="車型不夠">
+                <div class="card-body">
+                    <div class="card-icon">🚐</div>
+                    <h3>不知道什麼車型<br>才裝得下</h3>
+                    <p>人數、行李、兒童推車一次出發，普通轎車可能根本不夠。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Process / Value Section ===== -->
+<section class="section process-section">
+    <div class="container process-content">
+        <div class="process-top">
+            <span class="pill-tag">我們的接送服務</span>
+            <h2>你的行程先安排好，抵達後就直接出發</h2>
+            <p>我們不是單純幫你「叫一台車」，而是從預約的開始，先確認你的出發地、目的地、日期時間、人數、行李、車型需求，讓接送安排更清楚，也減少旅途中臨時找車的麻煩。</p>
+        </div>
+        <div class="flow-steps">
+            <div class="flow-step">
+                <div class="step-icon">📅</div>
+                <h3>提前預約</h3>
+                <p>出發前先確認行程，不必到了現場才找交通工具。</p>
+            </div>
+            <div class="flow-arrow">›</div>
+            <div class="flow-step">
+                <div class="step-icon">🚗</div>
+                <h3>適合車型</h3>
+                <p>依人數與行李需求，選擇轎車、休旅車、商務車或多人座車。</p>
+            </div>
+            <div class="flow-arrow">›</div>
+            <div class="flow-step">
+                <div class="step-icon">🛡️</div>
+                <h3>清楚接送</h3>
+                <p>事先確認接送時間與地點，降低抵達後不知道去哪裡等車的困擾。</p>
+            </div>
+            <div class="flow-arrow">›</div>
+            <div class="flow-step flow-cta">
+                <div>查看接送方案 ➔</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Service Categories ===== -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>不同旅程，都有適合的接送方式</h2>
+        </div>
+        <div class="service-cards">
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&q=80" alt="機場接送">
+                <div class="card-body">
+                    <h3>機場接送</h3>
+                    <p class="route">桃園機場/其他機場 ↔ 飯店/住址/目的地</p>
+                    <span class="tag">適合：第一次來台灣、家庭旅遊、海外旅行客</span>
+                </div>
+            </div>
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&q=80" alt="高鐵接送">
+                <div class="card-body">
+                    <h3>高鐵接送</h3>
+                    <p class="route">高鐵站 ↔ 飯店/景點/會議地址</p>
+                    <span class="tag">適合：商務旅客、跨城市移動、不熟悉在地交通的旅客</span>
+                </div>
+            </div>
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1470004914212-05527e49370b?w=400&q=80" alt="跨城市接送">
+                <div class="card-body">
+                    <h3>跨城市接送</h3>
+                    <p class="route">台北 ↔ 新竹 ↔ 台中 ↔ 嘉義 ↔ 台南 ↔ 高雄</p>
+                    <span class="tag">適合：需要直接前往下一座城市、不想自行轉乘的旅客</span>
+                </div>
+            </div>
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&q=80" alt="旅遊包車">
+                <div class="card-body">
+                    <h3>旅遊包車</h3>
+                    <p class="route">依旅客需求安排一日遊或多日行程</p>
+                    <span class="tag">適合：家庭、小型團體、彈性安排景點的旅客</span>
+                </div>
+            </div>
+            <div class="service-card">
+                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&q=80" alt="商務接送">
+                <div class="card-body">
+                    <h3>商務接送</h3>
+                    <p class="route">機場、飯店、公司、展覽場地與會議地址接送</p>
+                    <span class="tag">適合：企業客戶、海外客戶、商務人士</span>
+                </div>
+            </div>
+        </div>
+        <div class="disclaimer">
+            <span class="warn-icon">⚠️</span>
+            <div>
+                <p class="warn-title">不適合對象</p>
+                <p>如果您只需要臨時隨程叫車、沒有提前行程規劃，或希望完全依計程車跳表方式計價，這類需求可能不一定適合預約型接送服務。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Proof & Reliability Section ===== -->
+<section class="section proof-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>每一趟接送，都從確認行程開始</h2>
+            <p style="font-size: 15px; color: var(--text-muted); margin-top: 8px;">網站不要只說「專業、準時、安全」，而是把可以證明服務品質的素材直接放出來。</p>
+        </div>
+        <div class="proof-grid">
+            <div class="proof-card">
+                <h3>顧客評價</h3>
+                <div class="stars">★★★★★</div>
+                <p class="review-quote">「第一次來台灣，從桃園機場到飯店非常順利，司機也很親切。」</p>
+                <div class="reviewer">
+                    <div class="avatar">王</div>
+                    <div>
+                        <div class="name">王小姐</div>
+                        <div class="location">台北</div>
+                    </div>
+                </div>
+                <div class="carousel-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            <div class="proof-card">
+                <h3>實際車輛照片</h3>
+                <div class="vehicle-photos">
+                    <img class="main-photo" src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600&q=80" alt="車輛外觀">
+                    <div class="thumbs">
+                        <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&q=80" alt="後座">
+                        <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=300&q=80" alt="行李空間">
+                    </div>
+                    <p class="caption">多種車型選擇，乾淨舒適，行李空間充足</p>
+                </div>
+            </div>
+            <div class="proof-card case-study">
+                <h3>接送案例</h3>
+                <img class="case-img" src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=500&q=80" alt="飯店接送">
+                <p class="case-route">桃園機場 ➔ 台北飯店</p>
+                <p class="case-detail">5人 / 6件行李 / 高鐵商務車</p>
+            </div>
+            <div class="proof-card">
+                <h3>服務流程</h3>
+                <ul class="service-steps">
+                    <li><span class="num">1</span> 預約 <span class="arrow-icon">➔</span></li>
+                    <li><span class="num">2</span> 確認 <span class="arrow-icon">➔</span></li>
+                    <li><span class="num">3</span> 接送 <span class="arrow-icon">➔</span></li>
+                    <li><span class="num">4</span> 抵達</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FAQ Section ===== -->
+<section class="section">
+    <div class="container">
+        <div class="faq-grid">
+            <div class="faq-left">
+                <h2>常見問題</h2>
+                <p class="faq-sub">你可能會想知道的問題</p>
+                <details class="faq-item">
+                    <summary>航班延誤怎麼辦？</summary>
+                    <div class="faq-answer">我們會根據航班即時資訊調整接送時間，航班延誤不另外收費，請放心預約。</div>
+                </details>
+                <details class="faq-item">
+                    <summary>司機會在哪裡等我？</summary>
+                    <div class="faq-answer">接送前會提供司機聯絡方式與明確碰面地點（如機場出口、飯店大廳），確保您能順利找到司機。</div>
+                </details>
+                <details class="faq-item">
+                    <summary>行李很多，怎麼知道該選哪台車？</summary>
+                    <div class="faq-answer">預約時請告知行李數量與尺寸，我們會推薦最適合的車型，確保空間充足。</div>
+                </details>
+                <details class="faq-item">
+                    <summary>凌晨或清晨可以接送嗎？</summary>
+                    <div class="faq-answer">可以，我們提供24小時接送服務，凌晨或深夜班機皆可預約。</div>
+                </details>
+                <details class="faq-item">
+                    <summary>如果臨時取消或更改行程怎麼辦？</summary>
+                    <div class="faq-answer">請於出發前24小時通知，可免費更改或取消。若臨時取消可能產生部分費用，詳情請參考預約須知。</div>
+                </details>
+            </div>
+            <div class="faq-right">
+                <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80" alt="旅客看飛機">
+                <div class="speech-bubble">有問題？我們都會盡量幫你處理！</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA Banner ===== -->
+<section class="cta-banner">
+    <div class="floating-badge">熱門假日及連續假期，車輛較容易額滿，建議提早預約！</div>
+    <div class="container">
+        <div class="cta-content">
+            <span class="pill-tag">專門接送服務</span>
+            <h2>你的行程已經確定了嗎？</h2>
+            <p>把出發地、目的地、日期、人數與行李告訴我們。我們協助確認適合的接送方案，讓你不用到了機場才開始煩惱交通。</p>
+            <div class="cta-buttons">
+                <button class="btn btn-navy">立即取得接送報價 ➔</button>
+                <button class="btn btn-green">💬 LINE 詢問接送方案</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+    <div class="container">
+        <div class="footer-top">
+            <div class="footer-logo">
+                <div class="logo-icon">🚗</div>
+                <div class="logo-text">
+                    <span class="brand">安心接送</span>
+                    <span class="sub">機場 · 高鐵 · 跨城專車</span>
+                </div>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#">首頁</a></li>
+                <li><a href="#">服務介紹</a></li>
+                <li><a href="#">車型介紹</a></li>
+                <li><a href="#">常見問題</a></li>
+                <li><a href="#">聯絡我們</a></li>
+            </ul>
+            <div class="footer-cta">
+                <button class="btn btn-green">💬 LINE 諮詢</button>
+                <button class="btn btn-blue">立即預約</button>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-social">
+                <a href="#" title="Facebook">f</a>
+                <a href="#" title="Instagram">📷</a>
+            </div>
+            <p class="footer-copy">© 2025 安心接送. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
